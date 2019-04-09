@@ -211,8 +211,6 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf
 #    ln -s /usr/bin/php7 /usr/bin/php
 
-
-
 # Copy our nginx config
 RUN rm -Rf /etc/nginx/nginx.conf
 ADD conf/nginx.conf /etc/nginx/nginx.conf
