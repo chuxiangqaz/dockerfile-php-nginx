@@ -163,18 +163,10 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     apk add --no-cache bash \
     gettext-dev \
     gmp-dev \
-    openssh-client \
     wget \
-    supervisor \
     curl \
     libcurl \
-    git \
-    python \
-    python-dev \
-    py-pip \
     augeas-dev \
-    openssl-dev \
-    ca-certificates \
     dialog \
     autoconf \
     make \
@@ -213,30 +205,11 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
     php composer-setup.php --install-dir=/usr/bin --filename=composer && \
     php -r "unlink('composer-setup.php');"  && \
-    pip install -U pip && \
-    pip install -U certbot && \
     mkdir -p /etc/letsencrypt/webrootauth && \
-    apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev make autoconf
+    apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf
 #    ln -s /usr/bin/php7 /usr/bin/php
 
-# Install Python3 and install python package
-RUN apk add --no-cache python3 \
-    && python3 -m ensurepip \
-    && rm -r /usr/lib/python*/ensurepip \
-    && pip3 install --upgrade pip \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade XlsxWriter \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade openpyxl \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade xlrd \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade xlwt \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade urllib5 \
-    && pip3 install --default-timeout=100 --no-cache-dir --upgrade xlrd \
-    && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-    && if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi \
-    && rm -rf ~/.cache/pip \
-    && rm -rf /usr/share/php \
-    && rm -rf /tmp/*
 
-ADD conf/supervisord.conf /etc/supervisord.conf
 
 # Copy our nginx config
 RUN rm -Rf /etc/nginx/nginx.conf
@@ -279,11 +252,7 @@ RUN echo "cgi.fix_pathinfo=0" > ${php_vars} &&\
 
 # Add Scripts
 ADD scripts/start.sh /start.sh
-ADD scripts/pull /usr/bin/pull
-ADD scripts/push /usr/bin/push
-ADD scripts/letsencrypt-setup /usr/bin/letsencrypt-setup
-ADD scripts/letsencrypt-renew /usr/bin/letsencrypt-renew
-RUN chmod 755 /usr/bin/pull && chmod 755 /usr/bin/push && chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew && chmod 755 /start.sh
+RUN chmod 755 /start.sh
 
 # copy in code
 ADD src/ /var/www/html/
